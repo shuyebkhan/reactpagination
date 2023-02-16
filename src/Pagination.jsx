@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useFetch from "./useFetch";
 
 function Pagination() {
-  const { data, isError, totalPage } = useFetch(
+  const { userData, isError, totalPage } = useFetch(
     "https://jsonplaceholder.typicode.com/todos "
   );
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemToDisplay, setItemToDisplay] = useState([]);
 
   function increment() {
     if (currentPage < totalPage) {
@@ -23,10 +24,17 @@ function Pagination() {
   const preDisabled = currentPage === 1;
   const nextDisabled = currentPage === totalPage;
 
-  const itemsPerPage = 10;
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const itemsToDiaplay = data.slice(startIndex, endIndex);
+  useEffect(() => {
+    if (userData.length === 0) return;
+
+    const itemsPerPage = 10;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+      console.log(startIndex,endIndex);
+
+    setItemToDisplay(userData.slice(startIndex, endIndex));
+  }, [userData, currentPage]);
 
   return (
     <>
@@ -41,7 +49,7 @@ function Pagination() {
               <th>Title</th>
             </tr>
           </thead>
-          {itemsToDiaplay.map(({ id, userId, title }) => {
+          {itemToDisplay.map(({ id, userId, title }) => {
             return (
               <tbody key={id}>
                 <tr>
